@@ -17,28 +17,22 @@ export const todolistsSlice = createAppSlice({
         }
       }),
       fetchTodolists: create.asyncThunk(
-        async (arg, thunkAPI) => {
-          try {
-            const res = await todolistsApi.getTodolists()
-            console.log(res)
-
-            return { todolists: res.data }
-          } catch (error) {
-            return thunkAPI.rejectWithValue({
-              message: error instanceof Error ? error.message : "Unknown error",
-            })
-          }
+      async (_, thunkAPI) => {
+        try {
+          const res = await todolistsApi.getTodolists()
+          return { todolists: res.data }
+        } catch (error) {
+          return thunkAPI.rejectWithValue(null)
+        }
+      },
+      {
+        fulfilled: (state, action) => {
+          action.payload?.todolists.forEach(tl => {
+            state.push({ ...tl, filter: 'all' })
+          })
         },
-        {
-          fulfilled: (state, action) => {
-            return action.payload?.todolists.map((el) => ({
-              ...el,
-              filter: "all" as FilterValues,
-              entityStatus: "idle",
-            }))
-          },
-        },
-      ),
+      }
+    ),
       deleteTodolists: create.asyncThunk(
         async (id: string, thunkAPI) => {
           try {

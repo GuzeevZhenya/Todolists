@@ -25,17 +25,14 @@ const tasksSlice = createAppSlice({
           const res = await tasksApi.getTasks(todolistId)
           return { todolistId, tasks: res.data.items }
         } catch (error) {
-          return thunkAPI.rejectWithValue({
-            todolistId,
-            error: "Failed to fetch tasks",
-          })
+          return thunkAPI.rejectWithValue(null)
         }
       },
       {
         fulfilled: (state, action) => {
           state[action.payload.todolistId] = action.payload.tasks
         },
-      },
+      }
     ),
     createTaskTC: create.asyncThunk(
       async (args: { todolistId: string; title: string }, thunkAPI) => {
@@ -76,9 +73,9 @@ const tasksSlice = createAppSlice({
       },
     ),
     changeTaskStatusTC: create.asyncThunk(
-      async (args: { todolisId: string; tasksId: string; model: UpdateTaskModel }, thunkAPI) => {},
+      async (args: { todolisId: string; tasksId: string; model: UpdateTaskModel }, thunkAPI) => { },
       {
-        fulfilled: (state, action) => {},
+        fulfilled: (state, action) => { },
       },
     ),
   }),
