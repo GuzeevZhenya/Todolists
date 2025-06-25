@@ -3,7 +3,7 @@ import { useAppDispatch } from "@/common/hooks"
 import {
   changeTaskStatusAC,
   changeTaskTitleAC,
-  deleteTaskAC,
+  deleteTaskTC,
   TasksState,
 } from "@/features/todolists/model/tasks-reducer"
 import DeleteIcon from "@mui/icons-material/Delete"
@@ -24,7 +24,7 @@ export const TaskItem = ({ task, todolistId }: Props) => {
   const dispatch = useAppDispatch()
 
   const deleteTask = () => {
-    dispatch(deleteTaskAC({ todolistId, taskId: task.id }))
+    dispatch(deleteTaskTC({ todolistId, taskId: task.id }))
   }
 
   const changeTaskStatus = (e: ChangeEvent<HTMLInputElement>) => {

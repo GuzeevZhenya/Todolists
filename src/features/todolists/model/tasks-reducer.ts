@@ -1,19 +1,12 @@
 import { createAppSlice } from "@/common/utils/createAppSlice"
 import { tasksApi } from "../api/tasksApi"
-import { DomainTask } from "../api/tasksApi.types"
+import { DomainTask, UpdateTaskModel } from "../api/tasksApi.types"
 import { TaskStatus } from "@/common/enums"
 
 const tasksSlice = createAppSlice({
   name: "tasks",
   initialState: {} as TasksState,
   reducers: (create) => ({
-    deleteTaskAC: create.reducer<{ todolistId: string; taskId: string }>((state, action) => {
-      const tasks = state[action.payload.todolistId]
-      const index = tasks.findIndex((task) => task.id === action.payload.taskId)
-      if (index !== -1) {
-        tasks.splice(index, 1)
-      }
-    }),
     changeTaskStatusAC: create.reducer<{ todolistId: string; taskId: string; status: TaskStatus }>((state, action) => {
       const task = state[action.payload.todolistId].find((task) => task.id === action.payload.taskId)
       if (task) {
@@ -63,10 +56,35 @@ const tasksSlice = createAppSlice({
         },
       },
     ),
+    deleteTaskTC: create.asyncThunk(
+      async (payload: { todolistId: string; taskId: string }, thunkAPI) => {
+        try {
+          await tasksApi.deleteTask(payload)
+          return payload
+        } catch (error) {
+          return thunkAPI.rejectWithValue(null)
+        }
+      },
+      {
+        fulfilled: (state, action) => {
+          const tasks = state[action.payload?.todolistId]
+          const index = tasks.findIndex((task) => task.id === action.payload.taskId)
+          if (index !== -1) {
+            tasks.splice(index, 1)
+          }
+        },
+      },
+    ),
+    changeTaskStatusTC: create.asyncThunk(
+      async (args: { todolisId: string; tasksId: string; model: UpdateTaskModel }, thunkAPI) => {},
+      {
+        fulfilled: (state, action) => {},
+      },
+    ),
   }),
 })
 
 export const tasksReducer = tasksSlice.reducer
-export const { changeTaskStatusAC, changeTaskTitleAC, deleteTaskAC, fetchTasks, createTaskTC } = tasksSlice.actions
+export const { changeTaskStatusAC, changeTaskTitleAC, deleteTaskTC, fetchTasks, createTaskTC } = tasksSlice.actions
 
 export type TasksState = Record<string, DomainTask[]>
