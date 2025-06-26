@@ -1,6 +1,15 @@
-import { instance } from "@/common/instance"
+// import { instance } from "@/common/instance"
 import type { BaseResponse } from "@/common/types"
 import type { DomainTask, GetTasksResponse, UpdateTaskModel } from "./tasksApi.types"
+import axios from "axios"
+
+const instance = axios.create({
+  baseURL: "https://social-network.samuraijs.com/api/1.1/",
+  withCredentials: true,
+  headers: {
+    "API-KEY": "0c996da3-8cbb-451a-b885-75cfe34701ae",
+  },
+})
 
 export const tasksApi = {
   getTasks(todolistId: string) {

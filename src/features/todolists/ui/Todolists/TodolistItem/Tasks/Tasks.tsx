@@ -1,11 +1,10 @@
 import { useAppDispatch, useAppSelector } from "@/common/hooks"
-import { selectTasks } from "@/features/todolists/model/tasks-selectors"
 import { TaskItem } from "./TaskItem/TaskItem"
 import List from "@mui/material/List"
 import type { DomainTodolist } from "@/features/todolists/model/todolists-reducer"
 import { useEffect } from "react"
 import { TaskStatus } from "@/common/enums"
-import { fetchTasks } from "@/features/todolists/model/tasks-reducer"
+import { fetchTasks, selectTasks } from "@/features/todolists/model/tasks-reducer"
 
 type Props = {
   todolist: DomainTodolist

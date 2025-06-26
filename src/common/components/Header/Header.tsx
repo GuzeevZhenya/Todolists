@@ -9,10 +9,12 @@ import Container from "@mui/material/Container"
 import IconButton from "@mui/material/IconButton"
 import Switch from "@mui/material/Switch"
 import Toolbar from "@mui/material/Toolbar"
-import { changeThemeModeAC } from "@/app/app-reducer"
+import { changeThemeModeAC, selectAppStatus } from "@/app/app-reducer"
+import LinearProgress from "@mui/material/LinearProgress"
 
 export const Header = () => {
   const themeMode = useAppSelector(selectThemeMode)
+  const status = useAppSelector(selectAppStatus)
 
   const dispatch = useAppDispatch()
 
@@ -35,8 +37,12 @@ export const Header = () => {
             <NavButton background={theme.palette.primary.dark}>Faq</NavButton>
             <Switch color={"default"} onChange={changeMode} />
           </div>
+
         </Container>
       </Toolbar>
+      {
+        status === 'loading' && <LinearProgress />
+      }
     </AppBar>
   )
 }

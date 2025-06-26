@@ -2,6 +2,7 @@ import { createAction, createAsyncThunk, createReducer, createSlice, nanoid, Pay
 import { Todolist } from "../api/todolistsApi.types"
 import { todolistsApi } from "../api/todolistsApi"
 import { createAppSlice } from "@/common/utils/createAppSlice"
+import { setAppStatusAC } from "@/app/app-reducer"
 
 export type FilterValues = "all" | "active" | "completed"
 
@@ -17,25 +18,23 @@ export const todolistsSlice = createAppSlice({
         }
       }),
       fetchTodolists: create.asyncThunk(
-        async (arg, thunkAPI) => {
+        async (_, { dispatch, rejectWithValue }) => {
           try {
+            dispatch(setAppStatusAC({ status: "loading" }))
             const res = await todolistsApi.getTodolists()
-            console.log(res)
-
+            dispatch(setAppStatusAC({ status: "succeeded" }))
             return { todolists: res.data }
           } catch (error) {
-            return thunkAPI.rejectWithValue({
-              message: error instanceof Error ? error.message : "Unknown error",
-            })
+            return rejectWithValue(null)
+          } finally {
+            dispatch(setAppStatusAC({ status: "idle" }))
           }
         },
         {
           fulfilled: (state, action) => {
-            return action.payload?.todolists.map((el) => ({
-              ...el,
-              filter: "all" as FilterValues,
-              entityStatus: "idle",
-            }))
+            action.payload?.todolists.forEach((tl) => {
+              state.push({ ...tl, filter: "all" })
+            })
           },
         },
       ),
