@@ -3,18 +3,30 @@ import { selectTodolists } from "@/features/todolists/model/todolists-selectors"
 import { TodolistItem } from "./TodolistItem/TodolistItem"
 import Grid from "@mui/material/Grid2"
 import Paper from "@mui/material/Paper"
-import { useEffect } from "react"
+import { useEffect, useState } from "react"
 import { fetchTodolists } from "../../model/todolists-reducer"
 
 export const Todolists = () => {
   const todolists = useAppSelector(selectTodolists)
-
-  const dispatch = useAppDispatch();
+  const dispatch = useAppDispatch()
+  const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
-    dispatch(fetchTodolists())
-  }, [])
+    const fetchData = async () => {
+      try {
+        setError(null)
+        await dispatch(fetchTodolists()).unwrap()
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'Failed to load todolists')
+      }
+    }
 
+    fetchData()
+  }, [dispatch])
+
+  if (error) {
+    return <div>Error: {error}</div>
+  }
 
   return (
     <>

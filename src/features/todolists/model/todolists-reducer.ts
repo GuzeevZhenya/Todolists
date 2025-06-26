@@ -17,22 +17,36 @@ export const todolistsSlice = createAppSlice({
         }
       }),
       fetchTodolists: create.asyncThunk(
-      async (_, thunkAPI) => {
-        try {
-          const res = await todolistsApi.getTodolists()
-          return { todolists: res.data }
-        } catch (error) {
-          return thunkAPI.rejectWithValue(null)
-        }
-      },
-      {
-        fulfilled: (state, action) => {
-          action.payload?.todolists.forEach(tl => {
-            state.push({ ...tl, filter: 'all' })
-          })
+        async (_, thunkAPI) => {
+          try {
+            const res = await todolistsApi.getTodolists()
+            // Добавляем проверку формата ответа
+            if (!Array.isArray(res.data)) {
+              throw new Error('Invalid data format from API')
+            }
+            return { todolists: res.data }
+          } catch (error) {
+            console.error('Failed to fetch todolists:', error)
+            return thunkAPI.rejectWithValue(error instanceof Error ? error.message : 'Unknown error')
+          }
         },
-      }
-    ),
+        {
+          fulfilled: (state, action) => {
+            // Добавляем строгую проверку
+            if (action.payload?.todolists && Array.isArray(action.payload.todolists)) {
+              // Полная замена состояния вместо push
+              return action.payload.todolists.map(tl => ({
+                ...tl,
+                filter: 'all' as FilterValues
+              }))
+            }
+            return state // Возвращаем текущее состояние если данные невалидны
+          },
+          rejected: (state, action) => {
+            console.error('Fetch todolists failed:', action.payload)
+          }
+        }
+      ),
       deleteTodolists: create.asyncThunk(
         async (id: string, thunkAPI) => {
           try {
