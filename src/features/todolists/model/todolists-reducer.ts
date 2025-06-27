@@ -1,4 +1,3 @@
-import { createAction, createAsyncThunk, createReducer, createSlice, nanoid, PayloadAction } from "@reduxjs/toolkit"
 import { Todolist } from "../api/todolistsApi.types"
 import { todolistsApi } from "../api/todolistsApi"
 import { createAppSlice } from "@/common/utils/createAppSlice"
@@ -22,19 +21,28 @@ export const todolistsSlice = createAppSlice({
           try {
             dispatch(setAppStatusAC({ status: "loading" }))
             const res = await todolistsApi.getTodolists()
-            dispatch(setAppStatusAC({ status: "succeeded" }))
+            if (!Array.isArray(res.data)) {
+              throw new Error("Invalid data format from API")
+            }
             return { todolists: res.data }
           } catch (error) {
-            return rejectWithValue(null)
+            return rejectWithValue(error instanceof Error ? error.message : "Unknown error")
           } finally {
             dispatch(setAppStatusAC({ status: "idle" }))
           }
         },
         {
           fulfilled: (state, action) => {
-            action.payload?.todolists.forEach((tl) => {
-              state.push({ ...tl, filter: "all" })
-            })
+            if (action.payload?.todolists && Array.isArray(action.payload.todolists)) {
+              return action.payload.todolists.map((tl) => ({
+                ...tl,
+                filter: "all" as FilterValues,
+              }))
+            }
+            return state
+          },
+          rejected: (state, action) => {
+            console.error("Fetch todolists failed:", action.payload)
           },
         },
       ),

@@ -5,6 +5,7 @@ import {
   // changeTaskTitleAC,
 
   changeTaskStatusTC,
+  changeTaskTitleAC,
   deleteTaskTC,
 } from "@/features/todolists/model/tasks-reducer"
 import DeleteIcon from "@mui/icons-material/Delete"
@@ -38,11 +39,11 @@ export const TaskItem = ({ task, todolistId }: Props) => {
       priority: task.priority,
       description: task.description
     }
-    // dispatch(changeTaskStatusTC({ todolistId, taskId: task.id, model }))
+    dispatch(changeTaskStatusTC({ todolistId, taskId: task.id, model }))
   }
 
   const changeTaskTitle = (title: string) => {
-    // dispatch(changeTaskTitleAC({ todolistId, taskId: task.id, title }))
+    dispatch(changeTaskTitleAC({ todolistId, taskId: task.id, title }))
   }
 
   return (

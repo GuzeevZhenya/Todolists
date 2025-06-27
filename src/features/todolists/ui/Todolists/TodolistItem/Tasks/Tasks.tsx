@@ -18,7 +18,7 @@ export const Tasks = ({ todolist }: Props) => {
 
   useEffect(() => {
     dispatch(fetchTasks(id))
-  })
+  }, [])
 
   const todolistTasks = tasks[id]
   let filteredTasks = todolistTasks
